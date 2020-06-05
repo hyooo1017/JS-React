@@ -36,8 +36,8 @@ function Food({ name, picture, rating }){           // props 객체 안의 name�
   );
 }
 
+// 내가 얻고 싶은 props에 대한 설명을 적음
 Food.propTypes = {
-  // 내가 얻고 싶은 props에 대한 설명을 적음
   name: PropTypes.string.isRequired,
   picture: PropTypes.string.isRequired,
   rating: PropTypes.number.isRequired,
@@ -77,12 +77,14 @@ const foodILike = [
   },
 ]
 
-// function renderFood(dish){
-//   return <Food name={dish.name} picture={dish.image} />
-// }
+/*
+function renderFood(dish){
+  return <Food name={dish.name} picture={dish.image} />
+}
+*/
 
 // 웹사이트에서 동적 데이터를 추가하는 방법
-function Food_App() {
+function App() {
   return (
   <div>
     {/* dish는 'name'과 'image' 객체를 갖고 있는 <<객체>> 
@@ -93,4 +95,4 @@ function Food_App() {
   );
 }
 
-export default Food_App;
+export default App;
