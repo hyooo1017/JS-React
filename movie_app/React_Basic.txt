@@ -373,5 +373,56 @@ Warning: Each child in a list should have a unique "key" prop.
 			-> ul 태그 안에서 값으로 사용
 
 
+<< #4.4 >>
+- App.css 추가
+
+
+<< #4.5 >>
+- 텍스트의 높이가 모두 동일하게 보이도록 자바스크립트로 Movie.js 내부의 summary텍스트를 자름
+	-> 슬라이싱 사용
+		-> (ex)
+				<p className="movie__summary"> {summary.slice(0, 140)}... </p>
+
+
+<< #5.0 >>
+- package.json파일 내 homepage를 set해야 함
+	-> (ex)
+			"homepage": "https://hyooo1017.github.io/JS-React/"
+- package.json파일 내 scripts에 deploy 추가
+	-> (ex)
+			"scripts":{
+				...
+				"deploy": "gh-pages -d build"
+			}
+- 터미널에서 npm run build 실행
+	-> build 폴더 생성됨
+	-> 이 폴더를 gh-pages에 업로드
+- package.json파일 내 scripts에 predeploy 추가
+	-> (ex)
+			"scripts":{
+				...
+				"predeploy": "npm run build"
+			}
+1. deploy를 호출할 때마다 npm은 predeploy를 먼저 호출함
+2. predeploy는 npm run build 실행
+3. build는 build script 호출
+4. script는 folder 제공
+5. predeploy는 완료되고 deploy 호출
+6. deploy는 gh-pages를 호출하고 build 폴더를 업로드함
+
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
