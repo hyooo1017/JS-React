@@ -384,43 +384,182 @@ Warning: Each child in a list should have a unique "key" prop.
 				<p className="movie__summary"> {summary.slice(0, 140)}... </p>
 
 
-<< #5.0 >>
-- package.json파일 내 homepage를 set해야 함
+<< #5.0(생략) >>
+1. 코드를 cloud에 올리기 위해 gh-pages 설치
+	-> 실행 코드 : npm i gh-pages
+	-> github에 업로드하는 것을 허가해주는 모듈
+	-> 웹사이트를 github 페이지 도메인에 나타나게 해줌
+- 일반적으로 github에서 project이름을 가져오는 방식으로 동작함
+	-> (ex) {user_name}.github.io/{project_name}
+2. package.json파일 내 homepage를 set해야 함(띄어쓰기 없이 소문자로 구성)
 	-> (ex)
 			"homepage": "https://hyooo1017.github.io/JS-React/"
-- package.json파일 내 scripts에 deploy 추가
+3. package.json파일 내 scripts에 deploy 추가
+	-> gh-pages 호출하여 build folder 업로드
+(1) 터미널에서 npm run build 실행
+	-> build 폴더 생성됨
+(2) 이 폴더를 gh-pages에 업로드
 	-> (ex)
 			"scripts":{
 				...
 				"deploy": "gh-pages -d build"
 			}
-- 터미널에서 npm run build 실행
-	-> build 폴더 생성됨
-	-> 이 폴더를 gh-pages에 업로드
-- package.json파일 내 scripts에 predeploy 추가
+
+4. package.json파일 내 scripts에 predeploy 추가
 	-> (ex)
 			"scripts":{
 				...
 				"predeploy": "npm run build"
 			}
-1. deploy를 호출할 때마다 npm은 predeploy를 먼저 호출함
-2. predeploy는 npm run build 실행
-3. build는 build script 호출
-4. script는 folder 제공
-5. predeploy는 완료되고 deploy 호출
-6. deploy는 gh-pages를 호출하고 build 폴더를 업로드함
-
-				
-
-
-
-
-
-
+=> deploy를 호출할 때마다 npm은 predeploy를 먼저 호출함
+==> predeploy는 npm run build 실행
+===> build는 build script 호출
+====> script는 folder 제공
+=====> predeploy는 완료되고 deploy 호출
+======> deploy는 gh-pages를 호출하고 build 폴더를 업로드함
+5. npm run deploy 코드 실행
+	-> 4번의 설명대로 순차실행됨
+	-> 완료되면 Published 뜸
+6. https://{user_name}.github.io/{project_name}에서 영화 소개 페이지 나오는 것 확인
+	-> public폴더의 index.html파일에서 title을 원하는 이름으로 변경하면 크롬창 제목이 React App에서 변경한 이름으로 출력
+		# 업데이트해주기 위해 다시 deploy 실행 #
 
 
+<< #5.1 >>
+- state를 갖기 위해 class 컴포넌트를 더이상 가질 필요가 없음
+	-> react hooks때문
+	-> react hooks은 class 컴포넌트와는 다른 방식
+		(class 컴포넌트가 구식이라는 의미 XXX)
+- react native로 안드로이드/ios 앱을 만들 수 있음
 
 
+<< #6.0 >>
+- 영화 소개 페이지에 인터랙션과 상단 메뉴 추가
+- 리액트로 네비게이션 만들기
+1. 네비게이션을 만들어주는 패키지 react router dom 설치
+	-> 실행 코드 : npm i react-router-dom
+2. Movie.js와 Movie.css파일 components폴더로 이동
+	-> App.js에서 Movie.css 임포트하는 경로 수정
+		-> (ex)
+				import Movie from "../components/Movie.js";
+3. routes폴더에 Home.js와 About.js파일 생성
+	-> 2개의 라우터(2개 화면과 같은 개념)
+	-> 영화 설명(메인) 페이지, about 페이지
+4. App.js 수정
+	-> getMovies, renderMovies 대신 라우터 사용
+		(home 페이지나 about 페이지로 안내)
+5. Home.js에 기존 App.js내용 전부 복사+붙여넣고 class 이름 Home으로 수정
+6. App.css파일 이름 Home.css로 변경하여 routes폴더로 이동
+	-> Home.js에서 임포트하는 Home.css파일 경로 수정
+		-> (ex)
+				import "./Movie.css";
+
+<< # 6.1 >>
+- 라우터는 url을 확인하고 해당하는 컴포넌트 호출
+- "react-router-dom"에는 다양한 종류의 라우터들이 있음
+	-> 그 중에 HashRouter라는 라우터 사용
+- App.js에 "react-router-dom"의 HashRouter와 Route를 임포트함
+- App함수는 HashRouter를 반환하고 HashRouter 안에는 Route가 있음
+** Route 안에는 매우 중요한 props가 2개 들어감
+1. 렌더링할 화면(path)
+2. 어떤 동작을 할지(component)
+(1) (ex) > App.js <
+		...
+		import About from "./routes/About";
+		
+		...
+					<Route path="/about" component={About} />
+		...
+		
+		> About.js <			// 우선 간단한 컴포넌트 구현
+		import React from 'react';
+
+		function About(){
+			return <span>About this page: I built it because I love movies.</span>
+		}
+
+		export default About;
+=> path 안의 경로와 component 안의 이름이 반드시 같은 필요 없음
+==> > in Web <
+	url은 http://localhost:3001/JS-React#/로 바뀌어 있음
+	그 뒤에 App.js의 Route path에서 지정해준 about 추가하면 About.js 내용 확인 가능(component 수행)
+(2) 다양한 Route 추가 가능
+	-> (ex) > App.js <
+			...
+			import Home from "./routes/Home";
+			
+			...
+						<Route path="/" component={Home} />
+			...
+=> 여기까지만 추가하고 웹으로 가면 영화 소개 페이지와 About 둘 다 렌더됨		// 2개의 컴포넌트 동시에 렌더링됨
+	(이 때의 url은 여전히 http://localhost:3001/JS-React#/about)
+==> url에서 about을 지운 기본 페이지로 돌아가면 영화 소개 페이지만 렌더
+	=> 리액트 라우터가 작동하는 방식이 이러함....
+(3) route를 만드는 다른 방법!
+	-> (ex) > App.js <
+			...
+			// HashRouter 내부 내용 전부 삭제
+			<Route path="/home">
+				<h1>Home</h1>
+			</Route>
+			<Route path="/about">
+				<h1>About</h1>
+			</Route>
+			...
+=> path가 "/home", "/about"처럼 다른 url이라면 겹치지 않고 각컴포넌트는 혼자 렌더됨
+(4) 여기에 다른 라우트 추가
+	-> (ex) > App.js <
+			...
+			<Route path="/home/introduction">
+				<h1>Introduction</h1>
+			</Route>
+			...
+=> > in Web <
+	http://localhost:3001/JS-React#/home에서는 Home만 출력되지만
+	.../home/introduction은 HomeIntroduction이 출력되어 컴포넌트 2개가 렌더됨
+
+- 리액트 라우터는 기본적으로 라우터 내의 모든 url을 비교하여 매치되는 컴포넌트 모두 렌더링함
+	-> 그렇기 때문에 http://localhost:3001/JS-React#/home/introduction은
+		/home과 /home/introduction 모두 매치되므로 둘 다 렌더링되는 것!!
+- 여러 컴포넌트가 렌더되는 것을 막기 위해 route에 exact={true} 추가
+	-> url이 path와 똑같을 때만 렌더될 수 있도록 함
+
+
+<< #6.2 >>
+- 버튼을 만들어 네비게이션 기능 구현
+1. App.js에 <Navigation /> 추가
+2. components 폴더내에 Navigation.js 파일 생성
+	> Navigation.js <
+		import React from 'react';
+		
+		function Navigation(){
+			return <div>
+				<a href="/">Home</a>
+				<a href="/about">About</a>
+			</div>
+		}
+		export default Navigation;
+3. App.js에 Navigation 임포트함
+	-> 여기까지 구현하고 웹을 확인해보면 "Home"버튼과 "About"버튼이 상단에 추가된 것을 확인할 수 있음
+	--> 버튼을 누르면 웹페이지를 새로고침만 하고 About.js 렌더되지 않음
+		-> a 태그는 html이기 때문에 버튼을 누를 때마다 전체 페이지를 새로고침시켜버림(리액트가 죽고 새 페이지가 새로고침됨)
+			-> a 태그 대신에 link 사용
+4. Navigation.js에 "react-router-dom"의 Link 임포트하고 a를 Link로 변경
+	> Navigation.js <
+		...
+		import { Link } from "react-router-dom"
+		
+		...
+				<Link to="/">Home</Link>
+				<Link to="/about">About</Link>
+		...
+		-> 버튼이 리액트로 동작!!!!
+### Link는 라우터 밖에서 사용 불가 ###			// 현재는 HashRouter 안에서 사용 중
+* 모든 것을 라우터 안에서 할 필요는 없음	-> footer는 밖에서 써도 됨
+5. HashRouter를 BrowserRouter로 변경
+	-> 웹을 확인하면 url에 #가 빠져있는 것을 확인할 수 있음
+		-> BrowserRouter는 github pages에 정확하게 설정하기가 까다로워서 니꼬쌤은 HashRouter 사용
+		   (github pages에 업로드하고 싶을 때 HashRouter는 쉬움)
 
 
 
