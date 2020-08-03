@@ -506,7 +506,7 @@ Warning: Each child in a list should have a unique "key" prop.
 				<h1>About</h1>
 			</Route>
 			...
-=> path가 "/home", "/about"처럼 다른 url이라면 겹치지 않고 각컴포넌트는 혼자 렌더됨
+=> path가 "/home", "/about"처럼 다른 url이라면 겹치지 않고 각 컴포넌트 혼자 렌더됨
 (4) 여기에 다른 라우트 추가
 	-> (ex) > App.js <
 			...
@@ -528,7 +528,7 @@ Warning: Each child in a list should have a unique "key" prop.
 << #6.2 >>
 - 버튼을 만들어 네비게이션 기능 구현
 1. App.js에 <Navigation /> 추가
-2. components 폴더내에 Navigation.js 파일 생성
+2. components 폴더 내에 Navigation.js 파일 생성
 	> Navigation.js <
 		import React from 'react';
 		
@@ -550,8 +550,8 @@ Warning: Each child in a list should have a unique "key" prop.
 		import { Link } from "react-router-dom"
 		
 		...
-				<Link to="/">Home</Link>
-				<Link to="/about">About</Link>
+			<Link to="/">Home</Link>
+			<Link to="/about">About</Link>
 		...
 		-> 버튼이 리액트로 동작!!!!
 ### Link는 라우터 밖에서 사용 불가 ###			// 현재는 HashRouter 안에서 사용 중
@@ -560,8 +560,140 @@ Warning: Each child in a list should have a unique "key" prop.
 	-> 웹을 확인하면 url에 #가 빠져있는 것을 확인할 수 있음
 		-> BrowserRouter는 github pages에 정확하게 설정하기가 까다로워서 니꼬쌤은 HashRouter 사용
 		   (github pages에 업로드하고 싶을 때 HashRouter는 쉬움)
+## App.js의 Route 안의 path와 Navigation.js의 Link 안의 to와 같아야 함 ##
 
 
+<< #6.3 >>
+- 영화 상세페이지 추가
+* props
+- Movie.js에서 year, title, summary, poster, genres를 props로 받고 있음
+- About.js에서 About함수에 props를 추가하여 콘솔에 출력하면 4개의 props 확인 가능
+	-> location, history, match, staticContext
+		-> about 화면으로 전송된 것이 아님!!
+		--> 리액트 라우터에 의해 넣어진 것
+# 라우터 안의 모든 Route들은 props를 기본값으로 갖고 있음 # 
+- 리액트 라우터 공식문서(https://reactrouter.com/web/api/Link/to-string)를 보면 Link의 to를 string으로 바꿀 수 있고 object로 바꿀 수 있음
+	-> 더 많은 것을 정의할 수 있도록 허용해줌
+1. to를 object로 바꿔서 pathname과 state 정의하기
+	> Navigation.js <
+		...
+			<Link to={{
+				pathname:"/about",
+				state: {
+					fromNavigation: true
+				}
+			}}>About</Link>
+		...
+		-> about페이지로 객체를 보냄
+=> about페이지의 콘솔로 props를 보면 location에서 pathname과 state 확인 가능
+2. Movie 컴포넌트가 필요한 것이므로 Moive.js에 Link 추가
+  (pathname은 "/movie-detail"이고 state로는 넘어온 props 전부)
+	> Movie.js <
+	...
+	import { Link } from "react-router-dom";
+	...
+	return (
+		<Link to={{
+			pathname:"/movie-detail",
+			state:{
+				year: year,
+				title: title,
+				summary: summary,
+				poster: poster,
+				genres: genres
+				}
+			}}>
+			...
+		</Link>
+	...
+	-> state에서 보낼 props만 적어도 됨
+		(ex)
+			state:{
+				year,
+				title,
+				summary,
+				poster,
+				genres
+				}
+3. Movie 컴포넌트를 넘겨받을 Detail.js(상세페이지) routes 폴더 안에 만들기
+	> App.js <
+	...
+	import Detail from "./routes/Detail";
+	...
+		<Route path="/movie-detail" component={Detail} />
+	...
+	-> 라우터 안에 Detail Route 추가
+	-> (ex) > Detail.js <
+			import React from "react";
+	
+			function Detail(props) {
+				console.log(props);
+				return <span>Hello</span>;
+				}
+			export default Detail;
+	=> 영화 카드를 클릭하면 Hello가 출력되고 콘솔에서 location의 state에 Movie 컴포넌트 내용 확인 가능
 
 
+<< #6.4 >>
+- Link를 통해 정보를 라우터로 보낼 수 있음
+- 영화카드를 클릭하지 않고 url창에 상세페이지 경로를 작성하여 이동하면 props(location의 state)에는 아무 정보가 없음 // undefined
+1. Detail 페이지의 Detail 함수를 Detail 클래스로 변경
+2. componentDidMount()로 location의 state 받아옮
+  (만일 영화카드 클릭으로 넘어오지 않거나 location의 state가 없는 경우 Home으로 리다이렉트시킴)
+	> Detail.js <
+	...
+	class Detail extends React.Component {
+		componentDidMount() {
+			const { location, history } = this.props;
+			if (location.state === undefined) {
+				history.push("/");
+			}
+		}
+		...
+	-> "http://localhost:3001/JS-React#/movie-detail"으로 이동하면 메인페이지로 리다이렉트됨
+3. 영화제목이 출력될 수 있도록 코드 추가
+	> Detail.js <
+	...
+	render() {
+	    const { location } = this.props;
+	    return <span>{location.state.title}</span>;
+	}
+	...
+	-> 영화카드를 클릭하면 영화제목이 출력됨
+		-> 이 상태에서 url창에서 다시 Enter 입력하면(새로고침하면) 에러 발생!
+			-> location이 존재하지 않기 때문
+		--> render되고 componentDidMount가 실행되기 때문에 location이 없다면 에러가 발생함
+			-> render함수에도 location이 있는지 확인하는 조건문 추가
+				> Detail.js <
+				...
+				render() {
+					const { location } = this.props;
+					if (location.state) {
+						return <span>{location.state.title}</span>;
+					} else {
+						return null;
+					}
+				}
+				...
+			-> location.state가 있을 때만 영화제목을 출력하고 그렇지 않으면 메인페이지로 리다이렉트됨
+## Link를 사용해서 페이지 사이에서 정보를 공유하고 리다이렉트하거나 네비게이션 방식을 바꿈 ##
+## (라우터의 props 이용해서!!) ##
+	-> Route의 컴포넌트는 props가 있음
+	-> Navigation은 props 없음
+4. Detail페이지의 path를 "/movie-detail"에서 "/movie/:id"로 수정
+	> App.js <
+	...
+	<Route path="/movie/:id" component={Detail} />
+	...
+	-> id는 변수
+
+	> Movei.js <
+	...
+	function Movie({ id, year, title, summary, poster, genres }){
+	...
+		<Link to={{
+				pathname:`/movie/${id}`,
+	...
+	-> Movie 페이지의 props로 id를 추가하고 Link의 pathname 수정
+	
 
